@@ -1,0 +1,197 @@
+<!-- Power Encoder: PowerEncode @ Lib:MT -->
+<!-- Group: Powers -->
+
+[h: PowerName = macro.args]
+[h: PowerInfo = json.get(Powers,PowerName)]
+
+
+
+[h: command = encode('
+	<!-- ------------------------------ ' +PowerName + ' ------------------------------ -->
+')]
+
+
+[h: command = command + initialInfo(PowerName)]	
+		
+[h: command = command + if(json.get(powerinfo,"frequency") == "Recharge", encode('
+    [h, if(json.get(powerinfo,"used"): recharge(PowerName, json.get(powerinfo,"recharge")]
+'), '')]
+
+[h:command = command + encode('
+	[h:abort(json.get(powerinfo,"used")-1)]
+')]
+
+[h: command = command + attackBonusGet(PowerName)]
+
+[h: command = command + encode('
+	<!-- Flavor Text Display -->
+		<i>[r: json.get(PowerInfo,"flavor")]</i><br>
+')]
+
+
+
+
+
+<!-- ----------------------------------------BEGIN TARGET SPECIFIC CALCS---------------------------------------- -->
+
+
+    [h: command = command + encode('
+		<!-- Code: Getting properties (target specific) -->
+		[h:defense = getProperty(json.get(powerinfo,"defensetype"),target)]
+		[h:WeakenedState = getState("Weakened")]
+    ')]
+
+	[h: command = command + attackHeader(PowerName)]
+
+	<!-- ATTACK ROLL -->	
+	[h: command = command + attackRoll(PowerName)]
+
+	<!-- ATTACK RESULTS DISPLAY -->
+	[h: command = command + encode('
+	<!-- Attack Result Display (target specific)-->
+	<table border="0" width="500"><tr><td style="padding:0px 5px;">
+		<b>[r:attack]</b> 
+		[r, if (attackRoll == 20) : " - <b>CRITICAL</b>"]
+	')]
+		
+		
+		
+	<!-- ----------------------------------------HIT---------------------------------------- -->
+	[h: command = command + encode('
+			<b>HIT:</b>
+	</td></tr></table>
+	')]
+	<!-- HIT DAMAGE -->
+	[h: command = command + if(json.get(powerinfo,"hitdamagecheck") == 1, hitDamage(PowerName, "target"), "")]
+	<!-- Hit Damage Display -->
+	[h: command = command + if(json.get(powerinfo,"hitdamagecheck") == 1, hitDamageDisplay(PowerName), "")]
+	<!-- HIT BONUS DAMAGE -->
+	[h: command = command + if(json.get(powerinfo,"hitbonusdamagecheck") == 1, hitBonusDamage(PowerName, "target"), "")]
+	<!-- Hit BONUS Damage Display -->
+	[h: command = command + if(json.get(powerinfo,"hitbonusdamagecheck") == 1, hitBonusDamageDisplay(PowerName), "")]
+	<!-- Hit Healing -->
+	[h: command = command + if(json.get(powerinfo,"hithealingcheck") == 1, hitHealing(PowerName), "")]
+	<!-- Hit Effects -->	
+	[h: command = command + if(json.get(powerinfo,"hiteffectscheck") == 1, hitEffects(PowerName), "")]
+
+	
+	
+		
+	<!-- ----------------------------------------MISS---------------------------------------- -->
+	[h: command = command + encode('
+			<b>MISS:</b>
+	</td></tr></table>
+	')]
+	<!-- MISS HALF DAMAGE -->
+	[h: command = command + if(json.get(powerinfo,"misshalfdamage") == 1, missHalfDamage(PowerName, "target"), "")]
+	<!-- Miss Half Damage Display -->
+	[h: command = command + if(json.get(powerinfo,"misshalfdamage") == 1, missHalfDamageDisplay(PowerName), "")]
+	<!-- MISS HALF BONUS DAMAGE -->
+	[h: command = command + if(json.get(powerinfo,"misshalfdamage") == 1 && json.get(powerinfo,"hitbonusdamagecheck") == 1, missHalfBonusDamage(PowerName, "target"), "")]
+	<!-- Miss Half Bonus Damage Display -->
+	[h: command = command + if(json.get(powerinfo,"misshalfdamage") == 1 && json.get(powerinfo,"hitbonusdamagecheck") == 1, missHalfBonusDamageDisplay(PowerName), "")]
+	<!-- MISS DAMAGE -->
+	[h: command = command + if(json.get(powerinfo,"missdamagecheck") == 1, missDamage(PowerName, "target"), "")]
+	<!-- Miss Damage Display -->
+	[h: command = command + if(json.get(powerinfo,"missdamagecheck") == 1, missDamageDisplay(PowerName), "")]
+	<!-- Miss BONUS DAMAGE -->
+	[h: command = command + if(json.get(powerinfo,"missbonusdamagecheck") == 1, missBonusDamage(PowerName, "target"), "")]
+	<!-- Miss BONUS Damage Display -->
+	[h: command = command + if(json.get(powerinfo,"missbonusdamagecheck") == 1, missBonusDamageDisplay(PowerName), "")]
+	<!-- Miss Healing -->
+	[h: command = command + if(json.get(powerinfo,"misshealingcheck") == 1, missHealing(PowerName), "")]
+	<!-- Miss Effects -->	
+	[h: command = command + if(json.get(powerinfo,"misseffectscheck") == 1, missEffects(PowerName), "")]
+
+
+
+
+	<!-- ----------------------------------------EFFECT---------------------------------------- -->
+	<!-- EFFECT DISPLAY -->
+	[h: command = command + if(json.get(powerinfo,"effectdamagecheck") == 1 || json.get(powerinfo,"effecthealingcheck") == 1 || json.get(powerinfo,"effecteffectscheck") == 1, encode('	
+	<table border="0" width="500"><tr><td style="padding:0px 5px;">		
+				<b>EFFECT:</b>
+	</td></tr></table>
+	'), '')]
+	<!-- Effect DAMAGE -->
+	[h: command = command + if(json.get(powerinfo,"effectdamagecheck") == 1, effectDamage(PowerName, "target"), "")]
+	<!-- Effect Damage Display -->
+	[h: command = command + if(json.get(powerinfo,"effectdamagecheck") == 1, effectDamageDisplay(PowerName), "")]
+	<!-- Effect BONUS DAMAGE -->
+	[h: command = command + if(json.get(powerinfo,"effectbonusdamagecheck") == 1, effectBonusDamage(PowerName, "target"), "")]
+	<!-- Effect BONUS Damage Display -->
+	[h: command = command + if(json.get(powerinfo,"effectbonusdamagecheck") == 1, effectBonusDamageDisplay(PowerName), "")]
+	<!-- Effect Healing -->
+	[h: command = command + if(json.get(powerinfo,"effecthealingcheck") == 1, effectHealing(PowerName), "")]
+	<!-- Effect Effects -->	
+	[h: command = command + if(json.get(powerinfo,"effecteffectscheck") == 1, effectEffects(PowerName), "")]
+
+
+
+
+
+	[h: command = command + encode('
+
+	<table border="0" width="500"><tr><td style="padding:0px 5px;">				
+						
+		<!-- Display: Weakened -->	
+			[r: WeakenedText = if(WeakenedState == 1, 
+				"<br>" +player+ "s attack seems weakened.", "")]
+			
+	</td></tr></table>
+	')]
+
+
+
+<!-- Making the macro button -->
+	[h,SWITCH(json.get(powerinfo,"frequency")),CODE:
+		case "At-Will":
+			{
+				[bcolor="green"]
+				[fcolor="black"]
+				[group="1 - Basic Attack"]
+				[grayout=0]
+			};
+		case "Encounter":
+			{
+				[bcolor="red"]
+				[fcolor="white"]
+				[group="2 - Powers"]
+				[grayout=1]
+			};
+		case "Daily":
+			{
+				[bcolor="black"]
+				[fcolor="white"]
+				[group="2 - Powers"]
+				[grayout=1]
+			};
+		case "Recharge":
+			{
+				[bcolor="red"]
+				[fcolor="white"]
+				[group="2 - Powers"]
+				[grayout=1]
+			};
+		case "Item":
+			{
+				[bcolor="yellow"]
+				[fcolor="black"]
+				[group="2 - Powers"]
+				[grayout=0]
+	};]
+	[h:macroProps="autoexec=true;"]
+	[h:macroProps=setStrProp(macroProps,"color",bcolor)]
+	[h:macroProps=setStrProp(macroProps,"fontColor",fcolor)]
+	[h:macroProps=setStrProp(macroProps,"group",group)]
+	[h:grayoutString=""]
+	[h,IF(grayout): grayoutString=encode('
+		[h:setMacroProps(' + '"<b>' +PowerName+ '</b>"' + ',"color=gray;" ' + ')]
+		[h:powerinfo = json.set(powerinfo,"used",1)]
+		[h:Powers = json.set(Powers,PowerName,powerinfo)]
+	')]
+	
+	[h:command=command+grayoutString]
+	[h:createMacro("<b>" +PowerName+ "</b>", decode(command), macroProps)]
+	
+[abort(0)]
